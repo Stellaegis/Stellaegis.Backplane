@@ -43,24 +43,39 @@ public class ClientTests
         }
     }
 
-    /// <summary>A client host, configured as a real one is: from its configuration section.</summary>
-    private static async Task<IHost> StartClientHostAsync(WebApplication server, string clientId, string hubPath = "/backplane/hub")
+    /// <summary>
+    /// A client host, configured as a real one is: from its configuration section, or in code when
+    /// <paramref name="inCode"/> is set.
+    /// </summary>
+    private static async Task<IHost> StartClientHostAsync(WebApplication server, string clientId, string hubPath = "/backplane/hub", bool inCode = false)
     {
         var builder = Host.CreateApplicationBuilder();
         builder.Logging.ClearProviders();
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            ["Stellaegis:Backplane:Client:BaseUrl"] = "http://localhost",
-            ["Stellaegis:Backplane:Client:HubPath"] = hubPath,
-            ["Stellaegis:Backplane:Client:Compartments:0"] = clientId,
-            ["Stellaegis:Backplane:Client:StartupAttempts"] = "2",
-            ["Stellaegis:Backplane:Client:RetryDelay"] = "00:00:00.200",
-        });
+        if (!inCode)
+            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Stellaegis:Backplane:Client:BaseUrl"] = "http://localhost",
+                ["Stellaegis:Backplane:Client:HubPath"] = hubPath,
+                ["Stellaegis:Backplane:Client:Compartments:0"] = clientId,
+                ["Stellaegis:Backplane:Client:StartupAttempts"] = "2",
+                ["Stellaegis:Backplane:Client:RetryDelay"] = "00:00:00.200",
+            });
         builder.Services
             .AddStellaegisFrame(ApplicationFrame.ManyCompartments())
             .AddStellaegisBackplane(b => Events.RegisterAll(b))
-            .AddSingleton<IHubConnectionCustomizer>(new ToTestServer(server, clientId))
-            .AddStellaegisBackplaneClient(builder.Configuration)
+            .AddSingleton<IHubConnectionCustomizer>(new ToTestServer(server, clientId));
+        if (inCode)
+            builder.Services.AddStellaegisBackplaneClient(o =>
+            {
+                o.BaseUrl = "http://localhost";
+                o.HubPath = hubPath;
+                o.Compartments = [clientId];
+                o.StartupAttempts = 2;
+                o.RetryDelay = TimeSpan.FromMilliseconds(200);
+            });
+        else
+            builder.Services.AddStellaegisBackplaneClient(builder.Configuration);
+        builder.Services
             .ConfigureHttpClientDefaults(http => http
                 .ConfigurePrimaryHttpMessageHandler(() => server.GetTestServer().CreateHandler())
                 .AddHttpMessageHandler(() => new HeaderClaims(clientId)));
@@ -74,7 +89,7 @@ public class ClientTests
     {
         await using var server = await HubTests.StartHostAsync();
         using var acme = await StartClientHostAsync(server, "acme");
-        using var globex = await StartClientHostAsync(server, "globex");
+        using var globex = await StartClientHostAsync(server, "globex", inCode: true);
         var atAcme = Channel.CreateUnbounded<Delivery<WidgetChanged>>();
         var atGlobex = Channel.CreateUnbounded<Delivery<WidgetChanged>>();
         var blockedAtGlobex = new TaskCompletionSource<UserBlocked>(TaskCreationOptions.RunContinuationsAsynchronously);

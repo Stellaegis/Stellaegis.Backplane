@@ -4,10 +4,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Stellaegis: the Microsoft.Extensions abstractions come with Stellaegis.Primitives.Hosting -->
-    <PackageVersion Include="Stellaegis.Primitives" Version="5.0.0" />
-    <PackageVersion Include="Stellaegis.Primitives.Hosting" Version="5.0.0" />
-    <PackageVersion Include="Stellaegis.Primitives.Data" Version="5.0.0" />
-    <PackageVersion Include="Stellaegis.Primitives.AspNetCore" Version="5.0.0" />
+    <PackageVersion Include="Stellaegis.Primitives" Version="5.0.1" />
+    <PackageVersion Include="Stellaegis.Primitives.Hosting" Version="5.0.1" />
+    <PackageVersion Include="Stellaegis.Primitives.Data" Version="5.0.1" />
+    <PackageVersion Include="Stellaegis.Primitives.AspNetCore" Version="5.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
     <!-- SignalR client, for the hosts that reach the hub -->
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.13" />

@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.1] — 2026-10-21
+
+### Fixed
+
+- `AddStellaegisBackplaneClient(Action<BackplaneClientOptions>)` sets the base address and the timeout of the
+  client: the package takes `Stellaegis.Primitives` 5.0.1, where `StellaegisClientOptions` became configurable in
+  code.
+
 ## [5.0.0] — 2026-10-21
 
 First release of the package, extracted from the backplane of the Stellaegis framework and rewritten on
