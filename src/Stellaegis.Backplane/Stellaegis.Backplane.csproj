@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Stellaegis.Backplane</RootNamespace>
+    <PackageId>Stellaegis.Backplane</PackageId>
+    <Description>Stellaegis backplane: the internal event bus of an application assembled from several hosts. The host registers each event type with its name on the wire and the recipient it goes to; a module publishes through the IEventPublisher of Stellaegis.Primitives; the host subscribes. An in-process bus for a single host; a transport comes in its own package.</Description>
+    <PackageTags>stellaegis;backplane;events;bus;compartment</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Stellaegis.Primitives" />
+    <PackageReference Include="Stellaegis.Primitives.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <InternalsVisibleTo Include="Stellaegis.Backplane.Client" />
+    <InternalsVisibleTo Include="Stellaegis.Backplane.Server" />
+    <InternalsVisibleTo Include="Stellaegis.Backplane.Tests" />
+  </ItemGroup>
+
+</Project>

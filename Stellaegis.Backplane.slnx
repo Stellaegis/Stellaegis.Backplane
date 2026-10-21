@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Stellaegis.Backplane/Stellaegis.Backplane.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Stellaegis.Backplane.Tests/Stellaegis.Backplane.Tests.csproj" />
+  </Folder>
+</Solution>
