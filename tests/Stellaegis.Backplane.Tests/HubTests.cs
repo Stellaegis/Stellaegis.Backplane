@@ -24,13 +24,20 @@ public class HubTests
 
     private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(10);
 
+    /// <summary>The application's rule in most tests: every authenticated service joins any recipient.</summary>
+    internal sealed class TrustedServices : IBackplaneMembershipPolicy
+    {
+        public Task<bool> CanJoinAsync(System.Security.Claims.ClaimsPrincipal user, Recipient recipient, CancellationToken cancellationToken = default)
+            => Task.FromResult(user.Identity?.IsAuthenticated == true);
+    }
+
     internal static Task<WebApplication> StartHostAsync(Action<WebApplication>? map = null, bool journal = true) => TestApp.StartAsync(
         services =>
         {
             services
                 .AddStellaegisFrame(ApplicationFrame.ManyCompartments())
                 .AddStellaegisBackplane(b => Events.RegisterAll(b))
-                .AddStellaegisBackplaneServer();
+                .AddStellaegisBackplaneServer<TrustedServices>();
             if (journal)
                 services.AddStellaegisInMemoryEventJournal();
         },
@@ -117,8 +124,7 @@ public class HubTests
             services => services
                 .AddStellaegisFrame(ApplicationFrame.ManyCompartments())
                 .AddStellaegisBackplane(b => Events.RegisterAll(b))
-                .AddSingleton<IBackplaneMembershipPolicy, OnlyAcme>()
-                .AddStellaegisBackplaneServer(),
+                .AddStellaegisBackplaneServer<OnlyAcme>(),
             app => app.MapBackplaneHub().RequireAuthorization());
         await using var connection = Connect(app, ("sub", "jane"));
         await connection.StartAsync(Ct);
@@ -209,7 +215,7 @@ public class HubTests
             services => services
                 .AddStellaegisFrame(ApplicationFrame.ManyCompartments())
                 .AddStellaegisBackplane(b => Events.RegisterAll(b))
-                .AddStellaegisBackplaneServer(configuration),
+                .AddStellaegisBackplaneServer<TrustedServices>(configuration),
             app => app.MapBackplaneHub().RequireAuthorization()));
         Assert.Contains("EventRetention must be positive", exception.Message);
 

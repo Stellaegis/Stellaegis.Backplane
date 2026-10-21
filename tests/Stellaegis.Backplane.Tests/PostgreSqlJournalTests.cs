@@ -65,7 +65,7 @@ public sealed class PostgreSqlJournalTests(PostgreSqlFixture database)
             services => services
                 .AddStellaegisFrame(ApplicationFrame.ManyCompartments())
                 .AddStellaegisBackplane(b => Events.RegisterAll(b))
-                .AddStellaegisBackplaneServer()
+                .AddStellaegisBackplaneServer<HubTests.TrustedServices>()
                 .AddStellaegisBackplanePostgreSQL(o => o.ConnectionString = database.ConnectionString),
             app => app.MapBackplaneEndpoints().RequireAuthorization());
         await app.Services.VerifyStellaegisDatabasesAsync(Ct);

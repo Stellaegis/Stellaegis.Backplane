@@ -7,22 +7,22 @@ namespace Stellaegis.Backplane.Server;
 
 /// <summary>
 /// Decides whether a connection may receive the events of a recipient — the services of a compartment, or a
-/// named service. Trusted services on a private network: unless the application registers its own policy, every
-/// authenticated connection may join any recipient, and who may connect at all is the authorization the host
-/// declares on the hub.
+/// named service. The isolation of the bus: a connection joins the group of a recipient only after the
+/// application authorized it here, server-side, never on the recipient the client names. Refusal is the default:
+/// there is no built-in policy, and the hub cannot be registered without one. An application whose services are
+/// all trusted writes the policy that says so, in one line.
+/// <code>
+/// sealed class TrustedServices : IBackplaneMembershipPolicy
+/// {
+///     public Task&lt;bool&gt; CanJoinAsync(ClaimsPrincipal user, Recipient recipient, CancellationToken ct)
+///         =&gt; Task.FromResult(user.Identity?.IsAuthenticated == true);
+/// }
+/// </code>
 /// </summary>
 public interface IBackplaneMembershipPolicy
 {
     /// <summary>Whether <paramref name="user"/> may receive the events of <paramref name="recipient"/>.</summary>
     Task<bool> CanJoinAsync(ClaimsPrincipal user, Recipient recipient, CancellationToken cancellationToken = default);
-}
-
-/// <summary>The policy of a backplane among trusted services: any authenticated connection joins any recipient.</summary>
-public sealed class AuthenticatedMembershipPolicy : IBackplaneMembershipPolicy
-{
-    /// <inheritdoc />
-    public Task<bool> CanJoinAsync(ClaimsPrincipal user, Recipient recipient, CancellationToken cancellationToken = default)
-        => Task.FromResult(Guard.NotNull(user).Identity?.IsAuthenticated == true);
 }
 
 /// <summary>

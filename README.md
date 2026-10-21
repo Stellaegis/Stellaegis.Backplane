@@ -99,7 +99,7 @@ of its own, so that a single-process application and a dedicated host map it the
 ```csharp
 builder.Services
     .AddStellaegisBackplane(b => ...)
-    .AddStellaegisBackplaneServer(builder.Configuration)
+    .AddStellaegisBackplaneServer<TrustedServices>(builder.Configuration)
     .AddStellaegisBackplanePostgreSQL(builder.Configuration);   // optional: the journal, for replay
 
 var app = builder.Build();
@@ -112,9 +112,17 @@ await app.Services.VerifyStellaegisDatabasesAsync();            // with the jour
 
 The startup check of `Stellaegis.Primitives.AspNetCore` fails a host that maps the hub or the routes
 without authorization. Who may connect is that authorization; which recipients a connection may join is
-the `IBackplaneMembershipPolicy` of the application, registered before `AddStellaegisBackplaneServer` —
-without one, every authenticated connection joins any recipient, the rule of trusted services on a
-private network.
+the `IBackplaneMembershipPolicy` of the application, which `AddStellaegisBackplaneServer<TPolicy>` requires:
+there is no built-in policy, and refusal is the default. An application whose services are all trusted,
+on a private network, writes the policy that says so:
+
+```csharp
+sealed class TrustedServices : IBackplaneMembershipPolicy
+{
+    public Task<bool> CanJoinAsync(ClaimsPrincipal user, Recipient recipient, CancellationToken ct = default)
+        => Task.FromResult(user.Identity?.IsAuthenticated == true);
+}
+```
 
 The hub stamps the emitter from the claims of the connection, in this order: `client_id`, the identifier
 of a service authenticated with client credentials; the name identifier; `sub`. A connection with none is

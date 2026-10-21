@@ -30,8 +30,8 @@ First release of the package, extracted from the backplane of the Stellaegis fra
 - The envelope travels as JSON, not as JSON in a string, and is the one shape of the hub, of the routes and of
   the journal.
 - The hub lives under the authentication of the host that maps it, never under a bearer scheme of its own, and
-  the startup check refuses it without authorization. An `IBackplaneMembershipPolicy` decides which recipients
-  a connection joins.
+  the startup check refuses it without authorization. The application's `IBackplaneMembershipPolicy`, required
+  at registration, decides which recipients a connection joins; there is no built-in policy.
 - The subscriptions of a host go through `IEventBus`, by type, by type with its delivery, or by name as JSON;
   the publication of a module goes through the `IEventPublisher` of Primitives.
 - The journal is a port, `IEventJournal`, with a form in memory; the PostgreSQL form declares its database

@@ -25,36 +25,38 @@ public static class ServiceCollectionExtensions
     public const string SectionName = "Stellaegis:Backplane:Server";
 
     /// <summary>
-    /// Registers the hub, SignalR, the startup check of its routes, the relay, the membership policy — the
-    /// application's <see cref="IBackplaneMembershipPolicy"/> if it registered one before, else
-    /// <see cref="AuthenticatedMembershipPolicy"/> —, the options bound from <paramref name="sectionName"/>, and
-    /// the cleanup of the journal. Call it beside <c>AddStellaegisBackplane</c>, which declares the events and
+    /// Registers the hub, SignalR, the startup check of its routes, the relay, the application's
+    /// <typeparamref name="TPolicy"/> that authorizes each join, the options bound from <paramref name="sectionName"/>,
+    /// and the cleanup of the journal. Call it beside <c>AddStellaegisBackplane</c>, which declares the events and
     /// the module, and beside the journal of the host, if any.
     /// </summary>
-    public static IServiceCollection AddStellaegisBackplaneServer(this IServiceCollection services, IConfiguration configuration, string sectionName = SectionName)
+    public static IServiceCollection AddStellaegisBackplaneServer<TPolicy>(this IServiceCollection services, IConfiguration configuration, string sectionName = SectionName)
+        where TPolicy : class, IBackplaneMembershipPolicy
     {
         Guard.NotNull(services);
         Guard.NotNull(configuration);
         services.AddStellaegisOptions<BackplaneServerOptions>(configuration, sectionName);
-        return Server(services);
+        return Server<TPolicy>(services);
     }
 
     /// <summary>
-    /// Registers the hub as <see cref="AddStellaegisBackplaneServer(IServiceCollection, IConfiguration, string)"/>
+    /// Registers the hub as <see cref="AddStellaegisBackplaneServer{TPolicy}(IServiceCollection, IConfiguration, string)"/>
     /// does, with its options configured in code — the defaults unless <paramref name="configure"/> changes them.
     /// </summary>
-    public static IServiceCollection AddStellaegisBackplaneServer(this IServiceCollection services, Action<BackplaneServerOptions>? configure = null)
+    public static IServiceCollection AddStellaegisBackplaneServer<TPolicy>(this IServiceCollection services, Action<BackplaneServerOptions>? configure = null)
+        where TPolicy : class, IBackplaneMembershipPolicy
     {
         Guard.NotNull(services);
         services.AddStellaegisOptions<BackplaneServerOptions>(configure ?? (_ => { }));
-        return Server(services);
+        return Server<TPolicy>(services);
     }
 
-    private static IServiceCollection Server(IServiceCollection services)
+    private static IServiceCollection Server<TPolicy>(IServiceCollection services)
+        where TPolicy : class, IBackplaneMembershipPolicy
     {
         services.AddSignalR();
         services.AddStellaegisStartupCheck();
-        services.TryAddSingleton<IBackplaneMembershipPolicy, AuthenticatedMembershipPolicy>();
+        services.TryAddSingleton<IBackplaneMembershipPolicy, TPolicy>();
         services.TryAddSingleton<EventRelay>();
         services.AddHostedService<EventCleanupService>();
         return services;
