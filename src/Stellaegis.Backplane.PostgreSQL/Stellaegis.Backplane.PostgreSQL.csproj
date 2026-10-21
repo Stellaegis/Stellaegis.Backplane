@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Stellaegis.Backplane.PostgreSQL</RootNamespace>
+    <PackageId>Stellaegis.Backplane.PostgreSQL</PackageId>
+    <Description>Stellaegis backplane journal on PostgreSQL: the events the hub relayed, kept in the bp schema for the replay a service asks for after a disconnection, with the declaration of its database for installation and verification.</Description>
+    <PackageTags>stellaegis;backplane;events;postgresql;journal</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Stellaegis.Backplane\Stellaegis.Backplane.csproj" />
+    <PackageReference Include="Stellaegis.Primitives.Data" />
+    <PackageReference Include="Npgsql" />
+    <InternalsVisibleTo Include="Stellaegis.Backplane.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\**\*.sql" />
+  </ItemGroup>
+
+</Project>

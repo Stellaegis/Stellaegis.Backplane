@@ -21,6 +21,7 @@
     <ProjectReference Include="..\..\src\Stellaegis.Backplane\Stellaegis.Backplane.csproj" />
     <ProjectReference Include="..\..\src\Stellaegis.Backplane.Server\Stellaegis.Backplane.Server.csproj" />
     <ProjectReference Include="..\..\src\Stellaegis.Backplane.Client\Stellaegis.Backplane.Client.csproj" />
+    <ProjectReference Include="..\..\src\Stellaegis.Backplane.PostgreSQL\Stellaegis.Backplane.PostgreSQL.csproj" />
   </ItemGroup>
 
   <ItemGroup>
