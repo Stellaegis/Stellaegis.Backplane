@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Stellaegis.Backplane.Client</RootNamespace>
+    <PackageId>Stellaegis.Backplane.Client</PackageId>
+    <Description>Stellaegis backplane client: the bus of a host that reaches the hub of the application. It joins the recipients the host serves, publishes over the connection or over HTTP when the connection is down, replays what it missed after a reconnection, and hands each event to the subscribers of the host.</Description>
+    <PackageTags>stellaegis;backplane;events;signalr;client</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Stellaegis.Backplane\Stellaegis.Backplane.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+    <InternalsVisibleTo Include="Stellaegis.Backplane.Tests" />
+  </ItemGroup>
+
+</Project>

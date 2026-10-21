@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Stellaegis.Backplane.Server</RootNamespace>
+    <PackageId>Stellaegis.Backplane.Server</PackageId>
+    <Description>Stellaegis backplane hub: a SignalR hub mapped in the application's host, under its own authentication, that stamps each event with the identity of the service publishing it, relays it to the connections of its recipient, and journals it for replay. With the HTTP endpoints of publication and replay.</Description>
+    <PackageTags>stellaegis;backplane;events;signalr;hub</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Stellaegis.Backplane\Stellaegis.Backplane.csproj" />
+    <PackageReference Include="Stellaegis.Primitives.AspNetCore" />
+    <InternalsVisibleTo Include="Stellaegis.Backplane.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

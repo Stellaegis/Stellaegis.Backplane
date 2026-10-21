@@ -64,7 +64,7 @@ public sealed class InMemoryBackplane : IEventPublisher, IEventBus, IAsyncDispos
     public async ValueTask DisposeAsync()
     {
         _queue.Writer.TryComplete();
-        await _loop.ConfigureAwait(false);
+        await _loop.ConfigureAwait(false);   // idempotent: a completed loop awaits at once
     }
 
     private async Task DrainAsync()

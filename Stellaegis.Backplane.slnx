@@ -1,5 +1,7 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Stellaegis.Backplane.Client/Stellaegis.Backplane.Client.csproj" />
+    <Project Path="src/Stellaegis.Backplane.Server/Stellaegis.Backplane.Server.csproj" />
     <Project Path="src/Stellaegis.Backplane/Stellaegis.Backplane.csproj" />
   </Folder>
   <Folder Name="/tests/">
