@@ -62,15 +62,19 @@ public sealed class EventRelay(IHubContext<BackplaneHub> hub, IServiceProvider s
         return stamped;
     }
 
-    /// <summary>The identity of <paramref name="user"/> as the hub stamps it, or <see langword="null"/>.</summary>
+    /// <summary>
+    /// The identity of <paramref name="user"/> as the hub stamps it, or <see langword="null"/>: the first identity
+    /// claim present, read with <see cref="Actor.TryParseClaim"/> — a token naming a job, <c>job:…</c>, names nobody,
+    /// so that no event is stamped as emitted by the code when a token sent it.
+    /// </summary>
     public static Actor? EmitterOf(ClaimsPrincipal? user)
     {
         if (user?.Identity?.IsAuthenticated != true)
             return null;
         foreach (var type in IdentityClaims)
         {
-            if (user.FindFirst(type)?.Value is { } value && Actor.TryParse(value, out var actor))
-                return actor;
+            if (user.FindFirst(type)?.Value is { } value)
+                return Actor.TryParseClaim(value, out var actor) ? actor : null;
         }
         return null;
     }

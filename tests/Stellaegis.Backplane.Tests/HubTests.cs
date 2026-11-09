@@ -186,6 +186,19 @@ public class HubTests
     }
 
     [Fact]
+    public async Task A_token_naming_a_job_emits_nothing()
+    {
+        // Only the code names a job: an event sent with such a token would reach its subscribers as emitted by it.
+        await using var app = await StartHostAsync();
+        using var http = app.GetTestClient();
+        http.DefaultRequestHeaders.Add(TestApp.ClaimHeaderPrefix + "sub", "job:install");
+
+        using var published = await http.PostAsJsonAsync("/backplane/events", EnvelopeOf("users.blocked", "_all", new { }), Ct);
+        Assert.Equal(HttpStatusCode.Unauthorized, published.StatusCode);
+        Assert.Contains("Emitter.Unknown", await published.Content.ReadAsStringAsync(Ct));
+    }
+
+    [Fact]
     public async Task An_anonymous_connection_is_refused_by_the_host()
     {
         await using var app = await StartHostAsync();
