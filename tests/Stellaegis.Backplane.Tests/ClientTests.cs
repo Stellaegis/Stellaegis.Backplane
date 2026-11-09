@@ -126,10 +126,11 @@ public class ClientTests
         await using var server = await HubTests.StartHostAsync();
         await Assert.ThrowsAnyAsync<Exception>(() => StartClientHostAsync(server, "acme", hubPath: "/nowhere"));
 
-        Assert.Equal("Compartments: 'Acme' is not a compartment.", new BackplaneClientOptions { BaseUrl = "http://h", Compartments = ["Acme"] }.FindError());
-        Assert.Contains("ServiceName must be an identifier", new BackplaneClientOptions { BaseUrl = "http://h", ServiceName = "Id" }.FindError());
+        Assert.Equal("Compartments: 'Acme' is not a compartment.", new BackplaneClientOptions { BaseUrl = "http://h", AllowPlainHttp = true, Compartments = ["Acme"] }.FindError());
+        Assert.Contains("ServiceName must be an identifier", new BackplaneClientOptions { BaseUrl = "http://h", AllowPlainHttp = true, ServiceName = "Id" }.FindError());
         Assert.Equal("BaseUrl is required, as an absolute http or https URL.", new BackplaneClientOptions().FindError());
-        Assert.Null(new BackplaneClientOptions { BaseUrl = "http://h", ServiceName = "identity", Compartments = ["acme"] }.FindError());
-        Assert.Equal([Recipient.Of(Events.Acme), Recipient.Service("identity")], new BackplaneClientOptions { BaseUrl = "http://h", ServiceName = "identity", Compartments = ["acme"] }.Recipients());
+        Assert.NotNull(new BackplaneClientOptions { BaseUrl = "http://h", ServiceName = "identity", Compartments = ["acme"] }.FindError());   // plain http to another machine
+        Assert.Null(new BackplaneClientOptions { BaseUrl = "http://h", AllowPlainHttp = true, ServiceName = "identity", Compartments = ["acme"] }.FindError());
+        Assert.Equal([Recipient.Of(Events.Acme), Recipient.Service("identity")], new BackplaneClientOptions { BaseUrl = "http://h", AllowPlainHttp = true, ServiceName = "identity", Compartments = ["acme"] }.Recipients());
     }
 }
