@@ -5,6 +5,28 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.0] — 2026-11-09
+
+On `Stellaegis.Primitives` 5.6.0, and a token naming a job emits nothing.
+
+### Fixed
+
+- **A token naming a job emits nothing.** The relay stamped an event with the first identity claim it could read as
+  an actor, `job:…` included: an event sent with a token whose `sub` was `job:install` reached its subscribers with
+  that emitter, as if the code had sent it. The first identity claim present is read with `Actor.TryParseClaim`;
+  naming a job, it names nobody, and the publication is refused, `Emitter.Unknown`.
+
+### Changed
+
+- **`Stellaegis.Primitives` 5.6.0 and Microsoft.Extensions 10.0.14.**
+
+### Updating from 5.0.1
+
+Take the version. A host meets what the startup of Primitives 5.6.0 now refuses, listed with its way out in the
+CHANGELOG of Primitives, § *Updating from 5.5.0* — for the backplane, mostly this: a client reaching the hub in plain
+http on another machine declares `AllowPlainHttp`; and on PostgreSQL, the journal's application connects with its own
+role. A connection whose first identity claim is not an actor any more, or names a job, is refused on publication.
+
 ## [5.0.1] — 2026-10-21
 
 ### Fixed

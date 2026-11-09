@@ -125,8 +125,9 @@ sealed class TrustedServices : IBackplaneMembershipPolicy
 ```
 
 The hub stamps the emitter from the claims of the connection, in this order: `client_id`, the identifier
-of a service authenticated with client credentials; the name identifier; `sub`. A connection with none is
-refused on publication.
+of a service authenticated with client credentials; the name identifier; `sub`. The first present decides, read
+with `Actor.TryParseClaim`: a connection with none, or whose claim names a job — `job:…`, which only the code
+names —, is refused on publication, `Emitter.Unknown`.
 
 SignalR reads a bearer token from the `Authorization` header; a WebSocket connection cannot send one, and
 a JWT host lets its scheme read `access_token` from the query string on the hub's path:
